@@ -1,0 +1,40 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    gsonDeps
+    jacksonDeps
+}
+
+dependencies {
+    compileOnly 'com.google.code.gson:gson:2.8.2'
+    compileOnly 'com.fasterxml.jackson.core:jackson-databind:2.9.6'
+    compileOnly 'com.fasterxml.jackson.core:jackson-core:2.9.6'
+    compileOnly 'com.fasterxml.jackson.core:jackson-annotations:2.9.6'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:3.11.1'
+
+    gsonDeps 'com.google.code.gson:gson:2.8.2'
+    jacksonDeps 'com.fasterxml.jackson.core:jackson-databind:2.9.6'
+}
+
+task copyGsonDependencies(type: Copy) {
+    from configurations.gsonDeps
+    into "$projectDir/src/test/resources/gson-deps"
+}
+
+task copyJacksonDependencies(type: Copy) {
+    from configurations.jacksonDeps
+    into "$projectDir/src/test/resources/jackson-deps"
+}
+
+test.dependsOn(copyGsonDependencies, copyJacksonDependencies)
+
+test {
+    classpath -= configurations.gsonDeps
+    classpath -= configurations.jacksonDeps
+}
